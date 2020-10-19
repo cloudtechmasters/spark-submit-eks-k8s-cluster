@@ -26,4 +26,6 @@
 ## Install Docker:
     yum install docker -y
     service docker start
+# EKS Cluster Setup:
+  [EKS Cluster Setup](https://github.com/cloudtechmasters/eks-cluster-setup.git)
     
