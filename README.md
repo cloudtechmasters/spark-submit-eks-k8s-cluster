@@ -1,5 +1,5 @@
 # spark-submit-eks-k8s-cluster
-## Hello Springboot deployment using CICD Pipeline with helm
+## How to run Apache Spark on Kubernetes (Amazon EKS)
 
 ## Pre-requisites:
     - Install Java
