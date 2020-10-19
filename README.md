@@ -6,8 +6,6 @@
     - Install Git
     - Install Maven
     - Install Docker
-    - Install Jenkins
-    - Install Helm
     - EKS Cluster
 ## Install Java:
     yum install java-1.8.0-openjdk-devel -y
