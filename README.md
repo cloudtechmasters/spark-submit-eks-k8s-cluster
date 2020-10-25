@@ -28,4 +28,19 @@
     service docker start
 # EKS Cluster Setup:
   [EKS Cluster Setup](https://github.com/cloudtechmasters/eks-cluster-setup.git)
+  
+## Download Apache Spark 
+    cd /opt
+    wget https://mirrors.estointernet.in/apache/spark/spark-2.4.7/spark-2.4.7-bin-hadoop2.7.tgz
+    tar xvf spark-2.4.7-bin-hadoop2.7.tgz
+## Go to spark main directory
+   cd spark-2.4.7-bin-hadoop2.7
+   Execute build command. This command should be executed from Spark parent directory
+   docker build -t cloudtechmasters/sparkimage:latest -f kubernetes/dockerfiles/spark/Dockerfile .
+   
+## Login to DockerHub Account
+   docker login
+   enter your username and password
+## Push your sparkimage to dockerhub account
+   docker push cloudtechmasters/sparkimage:latest
     
