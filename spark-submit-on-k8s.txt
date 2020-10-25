@@ -1,0 +1,54 @@
+wget https://mirrors.estointernet.in/apache/spark/spark-2.4.7/spark-2.4.7-bin-hadoop2.7.tgz
+eksctl create cluster --name=eks-spark-submit-1 \
+                  --region=us-east-1 \
+                  --zones=us-east-1a,us-east-1b \
+                  --without-nodegroup 
+				  
+		eksctl utils associate-iam-oidc-provider \
+    --region us-east-1 \
+    --cluster eks-spark-submit-1 \
+    --approve		  
+eksctl create nodegroup --cluster=eks-spark-submit-1 \
+                   --region=us-east-1 \
+                   --name=spark-submit-node-group-1 \
+                   --node-type=t2.large \
+                   --nodes=2 \
+                   --nodes-min=2 \
+                   --nodes-max=4 \
+                   --node-volume-size=10 \
+                   --ssh-access \
+                   --ssh-public-key=aws-7-am \
+                   --managed \
+                   --asg-access \
+                   --external-dns-access \
+                   --full-ecr-access \
+                   --appmesh-access \
+                   --alb-ingress-access	
+aws eks update-kubeconfig --name eks-spark-submit-1 --region=us-east-1
+
+eksctl delete nodegroup --cluster=eks-spark-submit-1 \
+                   --region=us-east-1 \
+	          		--name=eks-spark-submit-node-group	
+eksctl delete nodegroup --cluster=eks-spark-submit-1  --region=us-east-1 	--name=spark-submit-node-group-1		
+eksctl delete cluster --name=eks-spark-submit-1  --region=us-east-1			
+###############################################################################
+#############################################################################
+spark-submit --master local --class com.cloudtechmasters.App spark-submit-eks-cluster-0.0.1-SNAPSHOT-jar-with-dependencies.jar
+###############################################
+Create a serviceaccount
+
+kubectl create serviceaccount spark
+Give the service account the edit role on the cluster
+
+kubectl create clusterrolebinding spark-role --clusterrole=edit --serviceaccount=default:spark --namespace=default
+Run spark submit with the following flag, in order to run it with the (just created(service account)
+####################################################################################
+In cluster mode, the Spark driver runs inside an application master process which is managed by YARN on the cluster, and the client can go away after initiating the application. In client mode, the driver runs in the client process, and the application master is only used for requesting resources from YARN
+In cluster mode, the driver will get started within the cluster in any of the worker machines. So, the client can fire the job and forget it. In client mode, the driver will get started within the client. So, the client has to be online and in touch with the cluster. So, if the client machine is “far” from the worker nodes then it makes sense to use cluster mode. If our application is in a gateway machine quite “close” to the worker nodes, the client mode could be a good choice.
+
+bin/spark-submit  --master k8s://https://5F0DA13F2D3C26DADB1AF2FF843C3F7F.gr7.us-east-1.eks.amazonaws.com:443 \
+--jars /root/spark-submit-eks-cluster-0.0.1-SNAPSHOT-jar-with-dependencies.jar \
+--deploy-mode client --name spark-java  --class com.cloudtechmasters.App  --conf spark.kubernetes.namespace=default \
+--conf spark.kubernetes.authenticate.driver.serviceAccountName=spark  --conf spark.executor.instances=2 \
+--conf spark.driver.extraClassPath=/root/spark-submit-eks-cluster-0.0.1-SNAPSHOT-jar-with-dependencies.jar \
+--conf spark.kubernetes.container.image=cloudtechmasters/oct-25-demo:latest /root/spark-submit-eks-cluster-0.0.1-SNAPSHOT-jar-with-dependencies.jar
