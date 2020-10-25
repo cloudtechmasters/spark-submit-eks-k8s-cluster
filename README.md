@@ -43,4 +43,5 @@
    enter your username and password
 ## Push your sparkimage to dockerhub account
    docker push cloudtechmasters/sparkimage:latest
+## Let us use this image to run a simple spark program (Spark Pi) on Amazon EKS cluster. I have the EKS cluster running already with 2 nodes. 
     
